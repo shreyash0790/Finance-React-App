@@ -22,8 +22,6 @@ const navigate = useNavigate()
     const enteredEmail = enteredEmailRef.current.value;
     const enteredPassword = enteredPasswordRef.current.value;
 
-    console.log(enteredEmail, enteredPassword);
-
     setLoading(true);
 
     try {

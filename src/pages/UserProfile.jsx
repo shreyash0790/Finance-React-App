@@ -1,4 +1,4 @@
-import { useContext, useRef, useState ,useEffect} from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 
 import AuthContext from "../components/Context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -13,49 +13,41 @@ const UserProfile = function () {
   const [isLoading, setLoading] = useState(false);
   const [isDisplay, setDisplay] = useState(false);
   const [profileName, setName] = useState("");
-
-
+  const [emailVerification, setVerification] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-            `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                idToken: authCtx.token,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-
-
-        if (!response.ok) {
-         setName("")
-        }
+          `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              idToken: authCtx.token,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await response.json();
+        if (!response.ok) {
+          setName("");
+         
+        }
 
-     setName(data.users[0].displayName);
-
-
+        setName(data.users[0].displayName);
+        if(data.users[0].emailVerified===true){
+        setVerification(true)
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-
-
-
-
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileName,emailVerification]);
 
   const profileFormDisplay = () => {
     setDisplay(true);
@@ -87,7 +79,7 @@ const UserProfile = function () {
         setLoading(false);
         alert("Name Updated");
         navigate("/home");
-        enteredNameRef.current.value=""
+        enteredNameRef.current.value = "";
       } else {
         const data = await response.json();
         let errMessage = "Authentication failed";
@@ -104,25 +96,73 @@ const UserProfile = function () {
     }
   };
 
+ const emailVerificationHandler =async ()=>{
+
+    try {
+        const response = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+            requestType:"VERIFY_EMAIL",
+              idToken: authCtx.token,
+              
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+            
+       
+          alert("Verifaction Link Sent!");
+        } else {
+          const data = await response.json();
+          let errMessage = "Verification failed";
+  
+          if (data && data.error && data.error.message) {
+            errMessage = data.error.message;
+          }
+  
+          alert(errMessage);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+ }
+
+
+  
   return (
     <section>
       <div className="grid grid-cols-1 lg:grid-cols-1 mb-44 ">
         <div className="flex items-center justify-center mt-44 mr-44 px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24 ">
-          <div className="xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md">
-           <h1 className="text-xl font-bold leading-tight text-blue-950 sm:text-4xl">
-          Hi, {profileName} 
-         </h1>
-         
-            <h1 className="text-xl font-bold leading-tight text-black sm:text-4xl">
+          <div className=" flex flex-col xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md">
+            <h1 className="  text-2xl font-bold leading-tight text-blue-950 sm:text-5xl">
+              Hi, {profileName}
+            </h1>
+
+            <h1 className=" mt-3 text-xl font-bold leading-tight text-black sm:text-4xl">
               Welcome to EzzyFinance
             </h1>
             <br />
             <button
-              className="text-sm  leading-tight text-slate-900 sm:text-2xl  hover:text-white"
+              className="text-sm   text-slate-900 sm:text-xl  hover:text-white"
               onClick={profileFormDisplay}
             >
               Update/Create Profile
             </button>
+           {!emailVerification && (
+            <button
+              className="text-sm mt-1 font-semibold  text-indigo-950 sm:text-lg  hover:text-white"
+              onClick={emailVerificationHandler}
+            >
+              Verify your email now!
+            </button>
+           )} 
             {isDisplay && (
               <form onSubmit={profileFormHandler} className="mt-8">
                 <div className="space-y-5">
