@@ -1,10 +1,18 @@
-import { Fragment} from "react";
+import { Fragment, useContext} from "react";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logo.svg"
 
+import AuthContext from "../Context/AuthContext";
+
 
 const Header = function () {
- 
+  const authCtx = useContext(AuthContext);
+  const isLoggedIn = authCtx.isLoggedIn;
+
+  const logoutHandler=()=>{
+    authCtx.logout();
+  }
+
 
   return (
     <Fragment>
@@ -76,12 +84,25 @@ const Header = function () {
             </div>
           </div>
           <div className=" flex justify-around  ml-96 ">
-            {<button
-              type="button"
-              className="  rounded-lg bg-slate-800 px-6 py-2 text-lg font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-            >
-             <NavLink to={'/'}>Login</NavLink> 
-            </button>}
+          {isLoggedIn &&(<button
+            type="button"
+            className="  rounded-sm bg-slate-800 px-6 py-2 text-lg font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            onClick={logoutHandler}
+          >
+          <NavLink to={'/'}>Logout</NavLink> 
+          </button>)}
+          {isLoggedIn &&(<button
+            type="button"
+            className=" ml-5 px-6 py-2 text-lg font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          >
+          <NavLink to={'/profile'}>Profile</NavLink> 
+          </button>)}
+          {!isLoggedIn &&(<button
+            type="button"
+            className="  rounded-lg bg-slate-800 px-6 py-2 text-lg font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          >
+           <NavLink to={'/'}>Login</NavLink> 
+          </button>)}
           </div>
         </div>
       </div>

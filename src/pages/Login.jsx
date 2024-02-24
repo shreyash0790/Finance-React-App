@@ -1,13 +1,23 @@
-import { useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useRef, useState, useContext } from "react";
+import { NavLink , useNavigate} from "react-router-dom";
+import AuthContext from "../components/Context/AuthContext";
+
+const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
 const Login = function () {
+
+
+
+  const authCtx=useContext(AuthContext)
+const navigate = useNavigate()
+
+
   const enteredEmailRef = useRef();
   const enteredPasswordRef = useRef();
 
   const [isLoading, setLoading] = useState(false);
 
-  const signUpFormHandler =  (e) => {
+  const signUpFormHandler = async (e) => {
     e.preventDefault();
     const enteredEmail = enteredEmailRef.current.value;
     const enteredPassword = enteredPasswordRef.current.value;
@@ -15,6 +25,48 @@ const Login = function () {
     console.log(enteredEmail, enteredPassword);
 
     setLoading(true);
+
+    try {
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if(response.ok){
+      setLoading(false)
+      const data=await response.json();
+       authCtx.login(data.idToken,data.email);
+       navigate('/home');
+       authCtx.emailHandler(data.email)
+      }
+      else{
+ 
+        const data = await response.json();
+        let errMessage = "Authentication failed";
+        
+        if (data && data.error && data.error.message) {
+          errMessage = data.error.message;
+        }
+        
+        alert(errMessage);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+
+
+
   };
 
   return (

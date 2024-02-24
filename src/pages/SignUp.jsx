@@ -1,24 +1,64 @@
-import { useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useRef, useState  } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+
+
+const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
 const SignUp = function () {
+
+  const navigate = useNavigate()
+
   const enteredEmailRef = useRef();
   const enteredPasswordRef = useRef();
 
   const [isLoading, setLoading] = useState(false);
 
-  const signUpFormHandler =  (e) => {
+  const signUpFormHandler = async (e) => {
     e.preventDefault();
     const enteredEmail = enteredEmailRef.current.value;
     const enteredPassword = enteredPasswordRef.current.value;
 
-    console.log(enteredEmail, enteredPassword);
+   
 
     if (enteredPassword.length < 6) {
       alert("Password must be at least 6 characters long");
       return;
     }
     setLoading(true);
+
+    try {
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if(response.ok){
+      setLoading(false);
+      navigate('/')
+      }
+      else{
+        const data = await response.json();
+        let errMessage = "Authentication failed";
+        
+        if (data && data.error && data.error.message) {
+          errMessage = data.error.message;
+        }
+        alert(errMessage)
+        setLoading(false)
+       
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
