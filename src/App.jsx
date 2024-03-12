@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import HomePage from "./pages/Home";
 import UserProfile from "./pages/UserProfile";
 import AuthContext from "./components/Context/AuthContext";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/profile" element={authCtx.isLoggedIn && <UserProfile />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="*" element={<ErrorPage />} />
+          <Route path="/resetPassword" element={<ResetPassword />} />
         </Routes>
       </main>
       <Footer />
