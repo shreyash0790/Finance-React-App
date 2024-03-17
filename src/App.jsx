@@ -11,6 +11,7 @@ import HomePage from "./pages/Home";
 import UserProfile from "./pages/UserProfile";
 import AuthContext from "./components/Context/AuthContext";
 import ResetPassword from "./pages/ResetPassword";
+import Expense from "./pages/Expense";
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/signUp" element={<SignUp />} />
+          <Route path="/expense" element={<Expense />} />
           <Route path="/" element={ !authCtx.isLoggedIn && <Login />} />
           <Route path="/profile" element={authCtx.isLoggedIn && <UserProfile />} />
           <Route path="/home" element={<HomePage />} />

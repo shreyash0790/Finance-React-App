@@ -58,7 +58,7 @@ const Header = function () {
                 </li>
                 <li>
                   <NavLink
-                    to={"/store"}
+                    to={"/expense"}
                     className={({ isActive }) =>
                       isActive
                         ? " font-protest-r text-xl font-bold text-white hover:text-slate-900 "
