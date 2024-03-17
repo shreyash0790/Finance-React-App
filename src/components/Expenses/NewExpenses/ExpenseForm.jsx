@@ -31,6 +31,9 @@ const ExpenseForm = (prop) => {
     setEnteredCategory(event.target.value);
   };
 
+
+  
+
   const submitHandler = (event) => {
     event.preventDefault();
     const expenseData = {

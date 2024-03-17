@@ -25,7 +25,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/signUp" element={<SignUp />} />
-          <Route path="/expense" element={<Expense />} />
+          <Route path="/expense" element={authCtx.isLoggedIn && <Expense />} />
           <Route path="/" element={ !authCtx.isLoggedIn && <Login />} />
           <Route path="/profile" element={authCtx.isLoggedIn && <UserProfile />} />
           <Route path="/home" element={<HomePage />} />
